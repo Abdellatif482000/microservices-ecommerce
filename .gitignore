@@ -1,0 +1,4 @@
+./authService/node_modules
+./cartService/node_modules
+./productService/node_modules
+./orderService/node_modules

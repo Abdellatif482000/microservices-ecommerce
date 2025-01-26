@@ -1,0 +1,145 @@
+services:
+  auth:
+    build:
+      context: ./authService
+      dockerfile: Dockerfile
+      target: dev
+    container_name: auth-service-container
+    networks:
+      - auth-service-Network
+      - app-Network
+    ports:
+      - 8084:8084
+
+    volumes:
+      - ./authService:/usr/src/app/
+    environment:
+      - MONGO_URI=mongodb://mongo-auth-DB:27017/auth
+      - JWT_SECRET=2da7c1a605bbbbeb34e51df44d0e3f13c54321540d7e65dc7fb6b91bba3dc4f1455328989a2dc1fa6a34e3dc7ef94fde222a64705f9f6aff7f238c04ea054159
+  mongo-auth:
+    image: mongo:latest
+
+    container_name: mongo-auth-DB
+    networks:
+      - auth-service-Network
+    volumes:
+      - mongo-auth:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=auth
+    ports:
+      - "27017:27017"
+  product:
+    build:
+      context: ./productService
+      dockerfile: Dockerfile
+      target: dev
+    container_name: product-service-container
+    networks:
+      - product-service-Network
+      - app-Network
+    ports:
+      - 8081:8081
+
+    volumes:
+      - ./productService:/usr/src/app/
+    environment:
+      - MONGO_URI=mongodb://mongo-product-DB:27017/product
+      - JWT_SECRET=2da7c1a605bbbbeb34e51df44d0e3f13c54321540d7e65dc7fb6b91bba3dc4f1455328989a2dc1fa6a34e3dc7ef94fde222a64705f9f6aff7f238c04ea054159
+  mongo-product:
+    image: mongo:latest
+
+    container_name: mongo-product-DB
+    networks:
+      - product-service-Network
+    volumes:
+      - mongo-products:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=product
+    ports:
+      - "27018:27017"
+  cart:
+    build:
+      context: ./cartService
+      dockerfile: Dockerfile
+      target: dev
+    container_name: cart-service-container
+    networks:
+      - cart-service-Network
+      - app-Network
+    ports:
+      - 8082:8082
+
+    volumes:
+      - ./cartService:/usr/src/app/
+    environment:
+      - MONGO_URI=mongodb://mongo-cart-DB:27017/cart
+      - JWT_SECRET=2da7c1a605bbbbeb34e51df44d0e3f13c54321540d7e65dc7fb6b91bba3dc4f1455328989a2dc1fa6a34e3dc7ef94fde222a64705f9f6aff7f238c04ea054159
+  mongo-cart:
+    image: mongo:latest
+    container_name: mongo-cart-DB
+    networks:
+      - cart-service-Network
+    volumes:
+      - mongo-carts:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=cart
+    ports:
+      - "27019:27017"
+  order:
+    build:
+      context: ./orderService
+      dockerfile: Dockerfile
+      target: dev
+    container_name: order-service-container
+    networks:
+      - order-service-Network
+      - app-Network
+    ports:
+      - 8083:8083
+
+    volumes:
+      - ./orderService:/usr/src/app/
+    environment:
+      - MONGO_URI=mongodb://mongo-order-DB:27017/order
+      - JWT_SECRET=2da7c1a605bbbbeb34e51df44d0e3f13c54321540d7e65dc7fb6b91bba3dc4f1455328989a2dc1fa6a34e3dc7ef94fde222a64705f9f6aff7f238c04ea054159
+  mongo-order:
+    image: mongo:latest
+    container_name: mongo-order-DB
+    networks:
+      - order-service-Network
+    volumes:
+      - mongo-orders:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=order
+    ports:
+      - "27020:27017"
+  nginx-conf-files:
+    image: nginx:latest
+    build:
+      context: ./nginx
+    container_name: nginx-server-container
+    networks:
+      - app-Network
+    ports:
+      - "80:80"
+    volumes:
+      # - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf
+
+networks:
+  app-Network:
+    driver: bridge
+  auth-service-Network:
+    driver: bridge
+  product-service-Network:
+    driver: bridge
+  cart-service-Network:
+    driver: bridge
+  order-service-Network:
+    driver: bridge
+
+volumes:
+  mongo-auth:
+  mongo-products:
+  mongo-carts:
+  mongo-orders:

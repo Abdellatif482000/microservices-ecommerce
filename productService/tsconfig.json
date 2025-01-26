@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "es2022", // Target JavaScript version
+    "module": "es2022", // Module system (e.g., CommonJS or ES6)
+    "outDir": "./dist", // Output directory for compiled files
+    "rootDir": "./src", // Root directory of TypeScript files
+    "strict": true, // Enable strict type-checking
+    "esModuleInterop": true, // Support for default imports from CommonJS
+    "skipLibCheck": true, // Skip type checking of .d.ts files
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["src/**/*"], // Files or directories to compile
+  "exclude": ["node_modules"] // Excluded files or directories
+}
