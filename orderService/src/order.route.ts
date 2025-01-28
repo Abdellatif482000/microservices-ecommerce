@@ -19,12 +19,12 @@ orderRoutes.post(
 
 orderRoutes.post(
   "/checkout",
-  // VerifyClass.verifyToken,
+  VerifyClass.verifyToken,
   OrderController.checkout
 );
 orderRoutes.get(
   "/getOrders",
-  // VerifyClass.verifyToken,
+  VerifyClass.verifyToken,
   OrderController.getOrders
 );
 orderRoutes.post(

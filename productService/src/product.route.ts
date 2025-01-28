@@ -34,7 +34,7 @@ productRoutes.get(
 productRoutes.put(
   "/updateProduct",
   VerifyClass.verifyToken,
-  VerifyClass.verifyRole("admin"),
+  // VerifyClass.verifyRole("admin"),
   // checkSchema(ProdcutValidator.validateModifyProduct),
   ProductController.modifyProduct
 );

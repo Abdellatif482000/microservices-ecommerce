@@ -1,15 +1,11 @@
 import express from "express";
 import axios from "axios";
+import bcrypt from "bcryptjs";
 import type { signupInterface, signinInterface } from "./auth.type.ts";
 
 const EXT = process.env.NODE_ENV === "prod" ? ".js" : ".ts";
 const { default: AuthHelper } = await import(`./auth.helper${EXT}`);
 const { adminModel, customerModel } = await import(`./auth.model${EXT}`);
-
-import bcrypt from "bcryptjs";
-// import CartServices from './cart.service';
-// import OrderServices from './order.service';
-// import BraintreeServices from './braintreePayment.service';
 
 class AuthServices {
   // // private token: string;

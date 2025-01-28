@@ -29,7 +29,7 @@ class VerifyClass {
         // res.status(401).json(token);
       }
       VerifyClass.decodedToken = jwt.verify(token, appKeys.JWT_SECRET!);
-      console.log("decodedToken>>> : ", VerifyClass.decodedToken);
+      // console.log("decodedToken>>> : ", VerifyClass.decodedToken);
       req.tokenState = {
         login: true,
         data: VerifyClass.decodedToken,

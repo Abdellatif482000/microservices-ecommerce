@@ -1,16 +1,73 @@
+import axios from "axios";
 import type { newOrderTypes } from "./order.type.ts";
+import crypto from "crypto";
+import { log } from "console";
 
 const EXT = process.env.NODE_ENV === "prod" ? ".js" : ".ts";
 
 const { default: OrderModel } = await import(`./order.model${EXT}`);
+const { appKeys } = await import(`./app.keys${EXT}`);
 
 class OrderServices {
   userID: string;
-  // userData: any;
+  userData: any;
 
-  constructor(userID = "") {
+  constructor(userID = "", userData = "") {
     this.userID = userID;
-    // this.userData = userData;
+    this.userData = userData;
+  }
+  // async tergetProduct(prodID: string) {
+  //   const targetProd = await axios.get(
+  //     `http://product:8081/product/getSingleProduct/${prodID}`
+  //   );
+  //   console.log(targetProd.data.product);
+  //   return targetProd.data.product;
+  // }
+
+  async tergetCart() {
+    const header = Buffer.from(
+      JSON.stringify({ alg: "HS256", typ: "JWT" })
+    ).toString("base64url");
+    const body = Buffer.from(
+      JSON.stringify({
+        userID: "679256cdf3caf9e8f3fae5c3",
+        userRole: "user",
+      })
+    ).toString("base64url");
+
+    const signature = crypto
+      .createHmac("sha256", appKeys.JWT_SECRET)
+      .update(`${header}.${body}`)
+      .digest("base64url");
+
+    const targetCart = await axios.get(`http://cart:8082/cart/getCart/`, {
+      headers: { Authorization: `Bearer ${header}.${body}.${signature}` },
+    });
+
+    return targetCart.data;
+  }
+
+  async clearCart() {
+    const header = Buffer.from(
+      JSON.stringify({ alg: "HS256", typ: "JWT" })
+    ).toString("base64url");
+    const body = Buffer.from(
+      JSON.stringify({
+        userID: "679256cdf3caf9e8f3fae5c3",
+        userRole: "user",
+      })
+    ).toString("base64url");
+
+    const signature = crypto
+      .createHmac("sha256", appKeys.JWT_SECRET)
+      .update(`${header}.${body}`)
+      .digest("base64url");
+
+    const targetCart = await axios.put(`http://cart:8082/cart/clearCart/`, {
+      headers: { Authorization: `Bearer ${header}.${body}.${signature}` },
+    });
+
+    return targetCart.data;
   }
 
   async initOrderList() {
@@ -28,35 +85,37 @@ class OrderServices {
 
     return targetOrderlist;
   }
-  // async checkout(paymentMethod: string) {
-  //   const cartService = await new CartServices(this.userID);
-  //   const targetCart = await cartService.getCart();
-  //   const targetOrderList = await this.getOrderlist();
+  async checkout(paymentMethod: string) {
+    const targetCart = await this.tergetCart();
 
-  //   let orderDetails = {
-  //     cartSummary: targetCart.items,
-  //     totalPrice: targetCart.totalCartPrice,
-  //     shippingAddress: this.userData.address
-  //       ? this.userData.address
-  //       : "address not provided",
-  //     phoneNum: this.userData.phoneNum
-  //       ? this.userData.phoneNum
-  //       : "phoneNum not provided",
-  //     paymentMethod: paymentMethod,
-  //     orderStatus: "pending",
-  //   };
+    const targetOrderList = await this.getOrderlist();
 
-  //   if (targetCart.items.length) {
-  //     if (paymentMethod === "cashOnDelivery") {
-  //       orderDetails.orderStatus = "processing";
-  //     }
-  //   }
-  //   targetOrderList.orders.push(orderDetails);
-  //   targetCart.items.splice(0, targetCart.items.length);
+    let orderDetails = {
+      cartSummary: targetCart.items,
+      totalPrice: targetCart.totalCartPrice,
+      shippingAddress: this.userData.address
+        ? this.userData.address
+        : "address not provided",
+      phoneNum: this.userData.phoneNum
+        ? this.userData.phoneNum
+        : "phoneNum not provided",
+      paymentMethod: paymentMethod,
+      orderStatus: "pending",
+    };
 
-  //   // return targetOrderList;
-  //   return { cart: targetCart, orderlist: targetOrderList };
-  // }
+    // if (targetCart.items.length) {
+    //   if (paymentMethod === "cashOnDelivery") {
+    //     orderDetails.orderStatus = "processing";
+    //   }
+    // }
+    // targetOrderList.orders.push(orderDetails);
+
+    // return targetOrderList;
+    return {
+      msg: "order confirmed",
+      orderlist: targetOrderList,
+    };
+  }
   async filterOrdersByStatus(status: string) {
     const foundOrders: object | any = await OrderModel.find({
       "orders.orderStatus": status,

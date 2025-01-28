@@ -1,0 +1,1 @@
+docker compose up --watch | grep -Ev "(mongo-auth|mongo-cart|mongo-order|mongo-product)"
