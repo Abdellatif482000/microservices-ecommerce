@@ -113,6 +113,35 @@ services:
       - MONGO_INITDB_DATABASE=order
     ports:
       - "27020:27017"
+  payment:
+    build:
+      context: ./paymentService
+      dockerfile: Dockerfile
+      target: dev
+    container_name: payment-service-container
+    networks:
+      - payment-service-Network
+      - app-Network
+    ports:
+      - 8085:8085
+
+    volumes:
+      - ./paymentService:/usr/src/app/
+    environment:
+      - MONGO_URI=mongodb://mongo-payment-DB:27017/payment
+      - JWT_SECRET=2da7c1a605bbbbeb34e51df44d0e3f13c54321540d7e65dc7fb6b91bba3dc4f1455328989a2dc1fa6a34e3dc7ef94fde222a64705f9f6aff7f238c04ea054159
+  mongo-payment:
+    image: mongo:latest
+    container_name: mongo-payment-DB
+    networks:
+      - payment-service-Network
+    volumes:
+      - mongo-payment:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=payment
+    ports:
+      - "27021:27017"
+
   nginx-conf-files:
     image: nginx:latest
     build:
@@ -137,9 +166,12 @@ networks:
     driver: bridge
   order-service-Network:
     driver: bridge
+  payment-service-Network:
+    driver: bridge
 
 volumes:
   mongo-auth:
   mongo-products:
   mongo-carts:
   mongo-orders:
+  mongo-payment:

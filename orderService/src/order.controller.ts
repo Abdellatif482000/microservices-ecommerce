@@ -24,10 +24,12 @@ class OrderController {
         phoneNum: req.body.phoneNum,
       });
       const checkout = await orderService.checkout(req.body.paymentMethod);
-      if (checkout.msg === "order confirmed") {
-        const targetCart = await orderService.clearCart();
 
-        res.status(200).json({ clearedCart: targetCart, checkout: checkout });
+      if (checkout.msg === "order confirmed") {
+        checkout.orderlist.save();
+        // res.status(200).json({ checkout: checkout });
+        const targetCart = await orderService.clearCart();
+        res.status(200).json({ targetCart: targetCart, checkout: checkout });
       }
     } catch (err) {
       log(err);

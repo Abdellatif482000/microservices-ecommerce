@@ -16,13 +16,6 @@ class OrderServices {
     this.userID = userID;
     this.userData = userData;
   }
-  // async tergetProduct(prodID: string) {
-  //   const targetProd = await axios.get(
-  //     `http://product:8081/product/getSingleProduct/${prodID}`
-  //   );
-  //   console.log(targetProd.data.product);
-  //   return targetProd.data.product;
-  // }
 
   async tergetCart() {
     const header = Buffer.from(
@@ -30,7 +23,7 @@ class OrderServices {
     ).toString("base64url");
     const body = Buffer.from(
       JSON.stringify({
-        userID: "679256cdf3caf9e8f3fae5c3",
+        userID: this.userID,
         userRole: "user",
       })
     ).toString("base64url");
@@ -48,26 +41,35 @@ class OrderServices {
   }
 
   async clearCart() {
-    const header = Buffer.from(
-      JSON.stringify({ alg: "HS256", typ: "JWT" })
-    ).toString("base64url");
-    const body = Buffer.from(
-      JSON.stringify({
-        userID: "679256cdf3caf9e8f3fae5c3",
-        userRole: "user",
-      })
-    ).toString("base64url");
+    try {
+      const header = Buffer.from(
+        JSON.stringify({ alg: "HS256", typ: "JWT" })
+      ).toString("base64url");
+      const body = Buffer.from(
+        JSON.stringify({
+          userID: this.userID,
+          userRole: "user",
+        })
+      ).toString("base64url");
 
-    const signature = crypto
-      .createHmac("sha256", appKeys.JWT_SECRET)
-      .update(`${header}.${body}`)
-      .digest("base64url");
+      const signature = crypto
+        .createHmac("sha256", appKeys.JWT_SECRET)
+        .update(`${header}.${body}`)
+        .digest("base64url");
 
-    const targetCart = await axios.put(`http://cart:8082/cart/clearCart/`, {
-      headers: { Authorization: `Bearer ${header}.${body}.${signature}` },
-    });
+      const targetCart = await axios.put(
+        `http://cart:8082/cart/clearCart/`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${header}.${body}.${signature}` },
+        }
+      );
 
-    return targetCart.data;
+      return targetCart.data;
+    } catch (err) {
+      log(err);
+      throw new Error("Failed to clear cart.");
+    }
   }
 
   async initOrderList() {
@@ -108,7 +110,7 @@ class OrderServices {
     //     orderDetails.orderStatus = "processing";
     //   }
     // }
-    // targetOrderList.orders.push(orderDetails);
+    targetOrderList.orders.push(orderDetails);
 
     // return targetOrderList;
     return {

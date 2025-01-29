@@ -31,7 +31,7 @@ class CartServices {
     ).toString("base64url");
     const body = Buffer.from(
       JSON.stringify({
-        userID: "6797b4c6734e754005b251e9",
+        userID: "67990ae75c5361ed1fbc7187",
         userRole: "user",
       })
     ).toString("base64url");
@@ -241,10 +241,9 @@ class CartServices {
     const targetCart = await this.getCart();
     const targetCartItems = targetCart.items;
 
-    const emptyCart = !targetCartItems.length
-      ? { message: "Cart is Empty" }
-      : null;
-    if (!emptyCart) {
+    !targetCartItems.length ? { message: "Cart is Empty" } : null;
+
+    if (targetCartItems.length) {
       targetCartItems.splice(0, targetCartItems.length);
       return targetCart;
     }
