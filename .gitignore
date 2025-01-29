@@ -2,3 +2,4 @@
 ./cartService/node_modules
 ./productService/node_modules
 ./orderService/node_modules
+./paymentService/node_modules
