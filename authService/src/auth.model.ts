@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-import bcrypt from 'bcryptjs';
+import bcrypt from "bcryptjs";
 
 const authSchema: mongoose.Schema = new mongoose.Schema(
   {
@@ -21,18 +21,17 @@ const authSchema: mongoose.Schema = new mongoose.Schema(
       type: String,
       require: true,
     },
-    braintreeID: { type: String },
   },
   {
     virtuals: {
       fullName: {
         get() {
-          return this.firstName + ' ' + this.lastName;
+          return this.firstName + " " + this.lastName;
         },
       },
     },
   }
 );
 
-export const adminModel = mongoose.model('Admins', authSchema);
-export const customerModel = mongoose.model('Users', authSchema);
+export const adminModel = mongoose.model("Admins", authSchema);
+export const customerModel = mongoose.model("Users", authSchema);

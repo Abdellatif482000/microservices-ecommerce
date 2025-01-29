@@ -23,11 +23,13 @@ export class AuthController {
         const savedUser = await newUser.userModel.save();
         const savedCart = await authService.newCart(savedUser.id);
         const savedOrderList = await authService.newOrderList(savedUser.id);
+        const savedPaymentList = await authService.newPaymentList(savedUser.id);
 
         res.status(200).json({
           savedUser: savedUser,
           savedCart: savedCart,
           savedOrderList: savedOrderList,
+          savedPaymentList: savedPaymentList,
         });
       }
     } catch (err: any) {

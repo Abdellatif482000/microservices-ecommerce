@@ -35,6 +35,15 @@ class AuthServices {
     console.log("newOrderList Res", newOrderList.data);
     return newOrderList.data;
   }
+  async newPaymentList(userID: string) {
+    const newPaymentList = await axios.post(
+      "http://payment:8085/payment/newPaymentList",
+      {
+        userID: userID,
+      }
+    );
+    return newPaymentList.data;
+  }
 
   async register(role: string, userData: any): Promise<any> {
     // ----------- hashing Pass ---------------
